@@ -1,0 +1,38 @@
+{
+  "name": "kyypurestatus",
+  "version": "3.0.0",
+  "private": true,
+  "description": "KyyPureStatus — Kirim video HD-friendly ke WhatsApp sendiri untuk di-forward ke Status (by KyyDevv)",
+  "license": "MIT",
+  "workspaces": [
+    "client"
+  ],
+  "scripts": {
+    "dev:server": "node server/index.js",
+    "dev:client": "npm run dev --workspace client",
+    "dev": "concurrently -n server,client -c green,cyan \"npm run dev:server\" \"npm run dev:client\"",
+    "build": "npm run build --workspace client",
+    "start": "node server/index.js",
+    "smoke": "node scripts/smoke.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.24",
+    "axios": "^1.19.0",
+    "cheerio": "^1.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "ffmpeg-static": "^5.3.0",
+    "ffprobe-static": "^3.1.0",
+    "fluent-ffmpeg": "^2.1.3",
+    "multer": "^2.0.1",
+    "pino": "^9.5.0",
+    "qrcode": "^1.5.4",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

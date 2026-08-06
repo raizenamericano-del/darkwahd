@@ -1,0 +1,387 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   DARK KNIGHT EDITION — obsidian · ember crimson · molten gold · steel
+   ============================================================ */
+
+@property --dk-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-ink-950 font-sans text-slate-200 antialiased;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(1200px 620px at 80% -10%, rgba(255, 45, 85, 0.08), transparent 60%),
+      radial-gradient(1000px 520px at -10% 110%, rgba(255, 180, 84, 0.05), transparent 60%),
+      radial-gradient(900px 500px at 50% 120%, rgba(127, 174, 222, 0.05), transparent 60%),
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  }
+  ::selection {
+    background: rgba(255, 45, 85, 0.45);
+    color: #fff;
+  }
+}
+
+@layer components {
+  .card {
+    /* PERF v4.1: backdrop-blur dihapus — re-blur tiap frame bikin lag di GPU
+       lemah; bg di-opaque-kan, visual hampir identik. */
+    @apply relative overflow-hidden rounded-2xl border border-white/10 bg-ink-900/90 shadow-card;
+  }
+  .card::before {
+    /* bara api tipis di tepi atas kartu */
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 92, 122, 0.5), rgba(255, 180, 84, 0.35), transparent);
+    pointer-events: none;
+  }
+
+  /* Bingkai ksatria: border conic-gradient (ember → steel).
+     PERF v4.1: default STATIS (repaint conic tiap frame di kartu besar = lag).
+     Pakai .knight-frame-spin hanya untuk elemen KECIL (logo splash). */
+  .knight-frame {
+    position: relative;
+    border-radius: 1.25rem;
+    background:
+      linear-gradient(#0b0b11, #0b0b11) padding-box,
+      conic-gradient(from var(--dk-angle), #ff2d55, #ffb454 25%, #1a1a24 40%, #7faede 60%, #1a1a24 78%, #ff2d55) border-box;
+    border: 1px solid transparent;
+  }
+  .knight-frame-spin {
+    animation: dk-border-spin 6s linear infinite;
+  }
+
+  .btn-primary {
+    @apply relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-brand via-ember-400 to-steel-400 bg-[length:200%_100%] px-5 py-3 text-sm font-bold text-ink-950 transition-all duration-300 hover:bg-[position:100%_0] hover:shadow-glow active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:shadow-none;
+  }
+  .btn-primary::after {
+    /* kilau pedang menyapu tombol saat hover */
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -80%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.6s ease;
+    pointer-events: none;
+  }
+  .btn-primary:hover::after {
+    left: 130%;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-medium text-slate-200 transition-all duration-200 hover:border-brand/40 hover:bg-brand/10 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40;
+  }
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-red-500/25 bg-red-500/10 px-4 py-2.5 text-sm font-medium text-red-400 transition-all duration-200 hover:bg-red-500/20 active:scale-[0.97];
+  }
+  .input {
+    @apply w-full rounded-xl border border-white/10 bg-ink-950/80 px-4 py-3 text-sm text-slate-100 placeholder-slate-500 outline-none transition-all duration-200 focus:border-brand/60 focus:ring-2 focus:ring-brand/20;
+  }
+  .label {
+    @apply mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-400;
+  }
+  .pill {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium;
+  }
+  .grad-text {
+    @apply bg-gradient-to-r from-brand via-ember-400 to-steel-400 bg-clip-text text-transparent;
+  }
+  .font-display {
+    font-family: 'Cinzel Variable', 'Space Grotesk Variable', Inter, ui-serif, serif;
+  }
+}
+
+/* ============ Judul glitch "Dark Knight" ============ */
+.dk-title {
+  position: relative;
+  display: inline-block;
+}
+.dk-title::before,
+.dk-title::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  opacity: 0;
+  pointer-events: none;
+}
+.dk-title::before {
+  animation: dk-glitch-a 3.2s steps(2, jump-none) infinite;
+  text-shadow: -1.5px 0 rgba(255, 45, 85, 0.85);
+}
+.dk-title::after {
+  animation: dk-glitch-b 2.7s steps(2, jump-none) infinite;
+  text-shadow: 1.5px 0 rgba(127, 174, 222, 0.85);
+}
+
+/* ============ Partikel bara api (ember) ============
+   PERF v4.1: glow di-bake ke radial-gradient (tanpa filter drop-shadow —
+   filter per-partikel x40 = repaint mahal). Hanya transform+opacity yg
+   dianimasikan → full compositor, nol repaint. */
+.ember {
+  position: absolute;
+  bottom: -12px;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 40% 35%, #ffd9a0, #ff7a3a 45%, rgba(255, 122, 58, 0.35) 62%, rgba(255, 45, 85, 0) 80%);
+  animation: ember-rise linear infinite;
+  will-change: transform, opacity;
+  contain: strict;
+}
+
+/* ============ Lapisan kabut / asap Gotham ============
+   PERF v4.1: blur(48px) diganti radial-gradient lembut — hasil sama,
+   biaya render ~0. */
+.smoke {
+  position: absolute;
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, rgba(28, 28, 40, 0.9), rgba(28, 28, 40, 0.4) 55%, transparent 75%);
+  animation: smoke-drift ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* ============ Glow orb (pengganti blur-[140px] + framer-motion) ============ */
+.orb {
+  position: absolute;
+  border-radius: 9999px;
+  animation: orb-pulse ease-in-out infinite;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+/* ============ Searchlight ala Bat-Signal ============ */
+.searchlight {
+  position: absolute;
+  top: -30%;
+  left: 50%;
+  width: 140vmax;
+  height: 140vmax;
+  margin-left: -70vmax;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(255, 217, 160, 0.06) 14deg,
+    rgba(255, 180, 84, 0.1) 20deg,
+    rgba(255, 217, 160, 0.06) 26deg,
+    transparent 40deg,
+    transparent 180deg,
+    rgba(127, 174, 222, 0.05) 196deg,
+    rgba(127, 174, 222, 0.08) 202deg,
+    rgba(127, 174, 222, 0.05) 208deg,
+    transparent 222deg
+  );
+  animation: dk-sweep 16s linear infinite;
+  transform-origin: 50% 50%;
+  pointer-events: none;
+  will-change: transform; /* rotate murni di compositor */
+}
+
+/* ============ Garis scan panel ============
+   PERF v4.1: animasi `top` = layout tiap frame → diganti transform. */
+.scanline {
+  position: relative;
+  overflow: hidden;
+}
+.scanline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 18%;
+  background: linear-gradient(180deg, transparent, rgba(255, 92, 122, 0.08), rgba(255, 180, 84, 0.12), transparent);
+  animation: scanline-move 3.4s ease-in-out infinite;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* ============ Reveal tebasan pedang (clip-path) ============ */
+.slash-in {
+  animation: slash-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ============ Keyframes inti ============ */
+@keyframes dk-border-spin {
+  to { --dk-angle: 360deg; }
+}
+@keyframes dk-glitch-a {
+  0%, 86%, 100% { opacity: 0; transform: translate(0, 0); clip-path: inset(0 0 0 0); }
+  88% { opacity: 0.8; transform: translate(-2px, 1px); clip-path: inset(10% 0 55% 0); }
+  92% { opacity: 0.8; transform: translate(2px, -1px); clip-path: inset(60% 0 12% 0); }
+  96% { opacity: 0.8; transform: translate(-1px, 0); clip-path: inset(30% 0 40% 0); }
+}
+@keyframes dk-glitch-b {
+  0%, 80%, 100% { opacity: 0; transform: translate(0, 0); clip-path: inset(0 0 0 0); }
+  83% { opacity: 0.8; transform: translate(2px, -1px); clip-path: inset(48% 0 30% 0); }
+  88% { opacity: 0.8; transform: translate(-2px, 1px); clip-path: inset(8% 0 70% 0); }
+  93% { opacity: 0.8; transform: translate(1px, 1px); clip-path: inset(70% 0 8% 0); }
+}
+@keyframes ember-rise {
+  0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+  8% { opacity: 0.9; }
+  50% { opacity: 0.75; transform: translateY(-52vh) translateX(var(--drift, 14px)) scale(0.82); }
+  100% { transform: translateY(-108vh) translateX(calc(var(--drift, 14px) * -0.6)) scale(0.4); opacity: 0; }
+}
+@keyframes smoke-drift {
+  0% { transform: translateX(-6%) translateY(0) scale(1); }
+  100% { transform: translateX(7%) translateY(-4%) scale(1.15); }
+}
+@keyframes dk-sweep {
+  to { transform: rotate(360deg); }
+}
+@keyframes slash-in {
+  0% { clip-path: polygon(0 0, 0 0, -12% 100%, 0 100%); opacity: 0; transform: translateX(-14px); }
+  100% { clip-path: polygon(0 0, 112% 0, 100% 100%, 0 100%); opacity: 1; transform: translateX(0); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes eq {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-9px); }
+}
+@keyframes scanline-move {
+  0% { transform: translateY(-130%); }
+  100% { transform: translateY(690%); }
+}
+/* opacity-only biar gak nabrak utility transform (translate centering) */
+@keyframes orb-pulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.9; }
+}
+@keyframes radar {
+  0% { transform: scale(0.6); opacity: 0.8; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+@keyframes blink-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+@keyframes pulse-ring {
+  0% { transform: scale(0.9); opacity: 0.6; }
+  70% { transform: scale(1.25); opacity: 0; }
+  100% { transform: scale(1.25); opacity: 0; }
+}
+@keyframes gradientX {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+@keyframes drift {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(-30px) translateX(18px); }
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.9; }
+}
+@keyframes wave-pulse {
+  0% { transform: scale(0.7); opacity: 0.7; }
+  100% { transform: scale(1.7); opacity: 0; }
+}
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+@keyframes trail {
+  0% { opacity: 0; transform: translateY(0); }
+  30% { opacity: 0.9; }
+  100% { opacity: 0; transform: translateY(-34px); }
+}
+
+/* Equalizer bars (saat kompresi) — bara api */
+.eq {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 22px;
+}
+.eq span {
+  width: 4px;
+  border-radius: 2px;
+  background: linear-gradient(to top, #ff2d55, #ffb454);
+  animation: eq 0.9s ease-in-out infinite;
+  transform-origin: bottom;
+}
+.eq span:nth-child(1) { animation-delay: 0s; }
+.eq span:nth-child(2) { animation-delay: 0.15s; }
+.eq span:nth-child(3) { animation-delay: 0.3s; }
+.eq span:nth-child(4) { animation-delay: 0.1s; }
+.eq span:nth-child(5) { animation-delay: 0.25s; }
+
+/* Track pesawat kertas saat "Kirim via WhatsApp" */
+.plane-track {
+  position: relative;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 45, 85, 0.2), rgba(255, 180, 84, 0.16));
+  overflow: visible;
+}
+.plane-dot {
+  position: absolute;
+  top: -3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ffb454;
+  animation: blink-soft 1s infinite;
+}
+
+/* QR frame corner — steel ice */
+.qr-corner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-color: rgba(127, 174, 222, 0.9);
+  filter: drop-shadow(0 0 6px rgba(127, 174, 222, 0.6));
+}
+
+/* Scrollbar kustom — ember */
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 45, 85, 0.25);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 45, 85, 0.45);
+}
+
+/* ============ PERF v4.1: hormati reduced-motion ============ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .ember, .smoke, .searchlight { display: none; }
+}
